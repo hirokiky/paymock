@@ -43,59 +43,59 @@ def factory_subscription(id, **kwargs):
     return subscription
 
 
-def mock_get(payobj):
+def mock_get(payobj, requests_mock=responses):
     url = urljoin(payjp.api_base, payobj.instance_url())
-    responses.add(
+    requests_mock.add(
         responses.GET, url,
         body=json.dumps(payobj), status=200,
         content_type='application/json',
     )
 
 
-def mock_create(payobj):
+def mock_create(payobj, requests_mock=responses):
     url = urljoin(payjp.api_base, payobj.class_url())
-    responses.add(
+    requests_mock.add(
         responses.POST, url,
         body=json.dumps(payobj), status=200,
         content_type='application/json',
     )
 
 
-def mock_update(payobj):
+def mock_update(payobj, requests_mock=responses):
     url = urljoin(payjp.api_base, payobj.instance_url())
-    responses.add(
+    requests_mock.add(
         responses.POST, url,
         body=json.dumps(payobj), status=200,
         content_type='application/json',
     )
 
 
-def mock_delete(payobj):
+def mock_delete(payobj, requests_mock=responses):
     url = urljoin(payjp.api_base, payobj.instance_url())
     body = json.dumps({
         "deleted": True,
         "id": payobj.id,
         "livemode": False
     })
-    responses.add(
+    requests_mock.add(
         responses.DELETE, url,
         body=body, status=204,
         content_type='application/json',
     )
 
 
-def mock_get_list(list_obj, payobj):
+def mock_get_list(list_obj, payobj, requests_mock=responses):
     url = urljoin(payjp.api_base, os.path.join(list_obj.url, payobj.id))
-    responses.add(
+    requests_mock.add(
         responses.GET, url,
         body=json.dumps(payobj), status=200,
         content_type='application/json',
     )
 
 
-def mock_create_list(list_obj, payobj):
+def mock_create_list(list_obj, payobj, requests_mock=responses):
     url = urljoin(payjp.api_base, list_obj.url)
-    responses.add(
+    requests_mock.add(
         responses.POST, url,
         body=json.dumps(payobj), status=200,
         content_type='application/json',
@@ -181,12 +181,12 @@ ERROR_NOT_FOUND = "not_found"
 ERROR_NOT_ALLOWED_METHOD = "not_allowed_method"
 
 
-def mock_error(method, path, code, status=400):
+def mock_error(method, path, code, status=400, requests_mock=responses):
     err = ERROR_BASE.copy()
     err['code'] = code
     err['status'] = status
     url = urljoin(payjp.api_base, path)
-    responses.add(
+    requests_mock.add(
         method, url, body=json.dumps(err),
         status=status, content_type='application/json'
     )
